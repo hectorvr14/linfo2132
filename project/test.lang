@@ -1,0 +1,86 @@
+// Constants
+final int constantA = 10;
+final int constantB = 20;
+final float floatConstant = 3.141592;
+final float floatConstant2 = 56.;
+final string message = "Testing Lexer";
+bool isTrue = true;
+
+// Structures
+struct Point {
+    int x;
+    int y;
+}
+
+struct Line {
+    Point start;
+    Point end;
+}
+
+// Function to add two integers
+int add(int a, int b) {
+    return a + b;
+}
+
+// Function to negate a boolean value
+def bool negate(bool value) {
+    return !(value);
+}
+
+// Function to print a message
+def void printMessage(string msg) {
+    writeln(msg);
+}
+
+// Function to create a line with start and end points
+def Line createLine(int startX, int startY, int endX, int endY) {
+    Line line;
+    line.start.x = startX;
+    line.start.y = startY;
+    line.end.x = endX;
+    line.end.y = endY;
+    return line;
+}
+
+// Main function
+def void main() {
+    // Using the add function with constants
+    int result = add(constantA, constantB);
+    printMessage("Result: " + result);
+
+    // Using float operations
+    float resultFloat = constantA + floatConstant;
+    printMessage("Float Result: " + resultFloat);
+
+    // Creating a line
+    Line myLine = createLine(1, 2, 3, 4);
+    
+    // Looping through numbers
+    for (int i = 0; i < 5; i = i + 1) {
+        bool isEven = i % 2 == 0;
+        if (isEven) {
+            printMessage("Even number: " + i);
+        } else {
+            printMessage("Odd number: " + i);
+        }
+    }
+
+    // Creating and accessing an array
+    int[] intArray = int[3];
+    intArray[0] = 5;
+    intArray[1] = 10;
+    intArray[2] = 15;
+
+    // Printing array elements
+    for (int i = 0; i < 3; i = i + 1) {
+        printMessage("Array Element: " + intArray[i]);
+    }
+
+    // Using a while loop and the negate function
+    while (isTrue) {
+        isTrue = negate(isTrue);
+    }
+
+    // Printing the final value of isTrue
+    printMessage("Final value of isTrue: " + isTrue);
+}

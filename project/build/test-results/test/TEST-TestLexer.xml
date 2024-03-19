@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TestLexer" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-03-19T17:25:00" hostname="hector-Inspiron-7370" time="0.028">
+  <properties/>
+  <testcase name="testFloat4" classname="TestLexer" time="0.028"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
