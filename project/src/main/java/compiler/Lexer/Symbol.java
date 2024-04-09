@@ -14,10 +14,14 @@ public class Symbol {
     // Attribute
     private String attr;
 
+    // Número de liña do símbolo
+    private int lineNumber;
+
     // Constructor
-    public Symbol(String token, String attribute) {
+    public Symbol(String token, String attribute, int lineNumber) {
         this.token = token;
         this.attr = attribute;
+        this.lineNumber = lineNumber;
     }
 
     public String getToken() {
@@ -27,6 +31,8 @@ public class Symbol {
     public String getAttr() {
         return attr;
     }
+
+    public int getLineNumber() { return lineNumber; }
 
     // How to print it
     @Override

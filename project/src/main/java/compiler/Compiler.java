@@ -10,6 +10,7 @@ package compiler;
 
 import compiler.Lexer.Lexer;
 import compiler.Lexer.Symbol;
+import compiler.Parser.Parser;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -44,6 +45,9 @@ public class Compiler {
 
         // Create the lexer
         Lexer lexer = new Lexer(reader);
+
+        // Create the parser
+        Parser parser = new Parser(lexer);
 
         // Call getNextSymbol() until EOF or error
         while(true) {

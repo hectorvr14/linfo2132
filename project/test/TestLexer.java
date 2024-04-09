@@ -73,7 +73,7 @@ public class TestLexer {
         String input = "12357097952";
         Lexer lexer = new Lexer(new StringReader(input));
         Symbol symbol = lexer.getNextSymbol();
-        assertEquals("Integer", symbol.getToken());
+        assertEquals("IntNumber", symbol.getToken());
         assertEquals("12357097952", symbol.getAttr());
     }
 
@@ -82,7 +82,7 @@ public class TestLexer {
         String input = "0000003252342342";
         Lexer lexer = new Lexer(new StringReader(input));
         Symbol symbol = lexer.getNextSymbol();
-        assertEquals("Integer", symbol.getToken());
+        assertEquals("IntNumber", symbol.getToken());
         assertEquals("0000003252342342", symbol.getAttr());
     }
 
@@ -91,7 +91,7 @@ public class TestLexer {
         String input = "0000003252342342.a";
         Lexer lexer = new Lexer(new StringReader(input));
         Symbol symbol = lexer.getNextSymbol();
-        assertEquals("Integer", symbol.getToken());
+        assertEquals("IntNumber", symbol.getToken());
         assertEquals("0000003252342342.a", symbol.getAttr());
     }
 

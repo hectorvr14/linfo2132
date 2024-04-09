@@ -20,8 +20,8 @@ public class Lexer {
     // Set of basic types
     private Set<String> dataTypes;
 
-    // Set of single special symbols
-    private Set<Character> singles;
+    // Current line being read
+    private int lineNumber;
 
     public Lexer(Reader input) {
 
@@ -30,9 +30,12 @@ public class Lexer {
 
         // Initialize the symbols
         initStructures();
+
+        // We start with the first line
+        this.lineNumber = 1;
     }
 
-    // Create the sets of keywords and symbols
+    // Create the sets of keywords and datatypes
     private void initStructures() {
 
         // Initialize the keywords
@@ -57,15 +60,6 @@ public class Lexer {
         this.dataTypes.add("string");
         this.dataTypes.add("bool");
 
-        // Initialize the single symbols
-        this.singles = new HashSet<>();
-
-        String symbols = "+-*%()[]{}.;,";
-        char[] symb = symbols.toCharArray();
-        for(int i = 0 ; i < symb.length; i++) {
-            this.singles.add(symb[i]);
-        }
-
     }
     
     public Symbol getNextSymbol() throws IOException {
@@ -77,7 +71,7 @@ public class Lexer {
 
         // End of file
         if(c == -1) {
-            symbol = new Symbol("EOF","");
+            symbol = new Symbol("EOF","", this.lineNumber);
             return symbol;
         }
 
@@ -93,15 +87,15 @@ public class Lexer {
                 }
             }
             if(s.equals("true") || s.equals("false")) { // Booleans
-                symbol = new Symbol("Boolean", s);
+                symbol = new Symbol("Boolean", s, this.lineNumber);
             }
             else if(this.dataTypes.contains(s)) { // Datatypes
-                symbol = new Symbol("Datatype", s);
+                symbol = new Symbol("Datatype", s, this.lineNumber);
             }
             else if(this.keywords.contains(s)) { // Keywords
-                symbol = new Symbol("Keyword", s);
+                symbol = new Symbol("Keyword", s, this.lineNumber);
             }
-            else { symbol = new Symbol("Identifier", s); } // Everything else is considered as an identifier
+            else { symbol = new Symbol("Identifier", s, this.lineNumber); } // Everything else is considered as an identifier
             return symbol;
         }
 
@@ -135,18 +129,18 @@ public class Lexer {
 
                         // Unread the last character - and return error
                         back.unread(c);
-                        symbol = new Symbol("Error", s);
+                        symbol = new Symbol("Error", s, this.lineNumber);
                     }
                     else { // No problem - float number
                         // Remember to unread the last character
                         back.unread(c);
-                        symbol = new Symbol("Float", s);
+                        symbol = new Symbol("Float", s, this.lineNumber);
                     }
                 }
                 else { // If it isn't a number - we will consider 3. as valid
                     // Unread the last character - and return float
                     back.unread(c);
-                    symbol = new Symbol("Float", s);
+                    symbol = new Symbol("Float", s, this.lineNumber);
                 }
             }
             else { // Not a dot
@@ -158,13 +152,13 @@ public class Lexer {
 
                     // Unread the last character - and return error
                     back.unread(c);
-                    symbol = new Symbol("Error", s);
+                    symbol = new Symbol("Error", s, this.lineNumber);
                 }
-                else { // Integer number
+                else { // IntNumber number
 
                     // Unread the last character - and return integer
                     back.unread(c);
-                    symbol = new Symbol("Integer", s);
+                    symbol = new Symbol("IntNumber", s, this.lineNumber);
                 }
             }
 
@@ -172,27 +166,163 @@ public class Lexer {
         }
 
         // Special single symbols - no need to look ahead, there is no confusion
-        else if(this.singles.contains((char) c)) {
+        else if(c == '+') {
             String s = "";
             s = s + (char) c;
-            symbol = new Symbol("SpecialCharacter", s);
+            symbol = new Symbol("AddOperator", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '-') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("SubtractOperator", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '*') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("ProductOperator", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '%') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("ModuleOperator", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '(') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("LeftParenthesis", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == ')') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("RightParenthesis", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '[') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("LeftBracket", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == ']') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("RightBracket", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '{') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("LeftBrace", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '}') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("RightBrace", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == '.') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("StructOperator", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == ';') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("Semicolon", "", this.lineNumber);
+            return symbol;
+        }
+
+        else if(c == ',') {
+            String s = "";
+            s = s + (char) c;
+            symbol = new Symbol("Comma", "", this.lineNumber);
             return symbol;
         }
 
         // Special double symbols - we need to continue looking ahead
-        else if((c == '=') || (c == '!') || (c == '<') || (c == '>')) {
+        else if(c == '=') {
             String s = "";
             s = s + (char) c;
             c = back.read();
             // Not an equal symbol - single special character
             if(c != '=') {
                 back.unread(c);
+                symbol = new Symbol("AssignmentOperator", "", this.lineNumber);
             }
             // Equal symbol - double special character
             else {
                 s = s + (char) c;
+                symbol = new Symbol("EqualOperator", "", this.lineNumber);
             }
-            symbol = new Symbol("SpecialCharacter", s);
+            return symbol;
+        }
+
+        else if(c == '!') {
+            String s = "";
+            s = s + (char) c;
+            c = back.read();
+            // Not an equal symbol - identifier (the negation function)
+            if(c != '=') {
+                back.unread(c);
+                symbol = new Symbol("Identifier", s, this.lineNumber);
+            }
+            // Equal symbol - double special character
+            else {
+                s = s + (char) c;
+                symbol = new Symbol("DifferentOperator", "", this.lineNumber);
+            }
+            return symbol;
+        }
+
+        else if(c == '<') {
+            String s = "";
+            s = s + (char) c;
+            c = back.read();
+            // Not an equal symbol - single special character
+            if(c != '=') {
+                back.unread(c);
+                symbol = new Symbol("LowerOperator", "", this.lineNumber);
+            }
+            // Equal symbol - double special character
+            else {
+                s = s + (char) c;
+                symbol = new Symbol("LowerEqualOperator", "", this.lineNumber);
+            }
+            return symbol;
+        }
+
+        else if(c == '>') {
+            String s = "";
+            s = s + (char) c;
+            c = back.read();
+            // Not an equal symbol - single special character
+            if(c != '=') {
+                back.unread(c);
+                symbol = new Symbol("GreaterOperator", "", this.lineNumber);
+            }
+            // Equal symbol - double special character
+            else {
+                s = s + (char) c;
+                symbol = new Symbol("GreaterEqualOperator", "", this.lineNumber);
+            }
             return symbol;
         }
 
@@ -204,13 +334,13 @@ public class Lexer {
             // Not a logic AND - raise an error because single & not recognised
             if(c != '&') {
                 back.unread(c);
-                symbol = new Symbol("Error", s);
+                symbol = new Symbol("Error", s, this.lineNumber);
                 return symbol;
             }
             // Logic AND
             else {
                 s = s + (char) c;
-                symbol = new Symbol("SpecialCharacter", s);
+                symbol = new Symbol("AndOperator", "", this.lineNumber);
                 return symbol;
             }
         }
@@ -223,13 +353,13 @@ public class Lexer {
             // Not a logic OR - raise an error because single | not recognised
             if(c != '|') {
                 back.unread(c);
-                symbol = new Symbol("Error", s);
+                symbol = new Symbol("Error", s, this.lineNumber);
                 return symbol;
             }
             // Logic OR
             else {
                 s = s + (char) c;
-                symbol = new Symbol("SpecialCharacter", s);
+                symbol = new Symbol("OrOperator", "", this.lineNumber);
                 return symbol;
             }
         }
@@ -242,24 +372,26 @@ public class Lexer {
             c = back.read();
             // If not another slash - division symbol
             if(c != '/') {
-                symbol = new Symbol("SpecialCharacter", s);
+                symbol = new Symbol("DivisionOperator", "", this.lineNumber);
                 return symbol;
             }
-            // Otherwise, comment - read until end of line (or file) and ignore
+            // Otherwise, comment - read until end of line (or file) and ignore, and also remember to increase line number
             else {
                 while(c != '\n' && c != -1) {
                     c = back.read();
                 }
+                this.lineNumber++;
             }
         }
 
-        // New line
+        // New line - increase line number
         else if(c == '\n') {
-            symbol = new Symbol("NewLine", "");
+            symbol = new Symbol("NewLine", "", this.lineNumber);
+            this.lineNumber++;
             return symbol;
         }
 
-        // Whitespace - ignore and return null
+        // Whitespace - ignore 
         else if(c == '\t' || c == ' ') {
 
         }
@@ -272,19 +404,19 @@ public class Lexer {
                 c = back.read();
                 // Check for end of file or line - and raise and error if found (strings only in one line)
                 if((c == -1) || (c == '\n')) {
-                    symbol = new Symbol("Error", s);
+                    symbol = new Symbol("Error", s, this.lineNumber);
                     return symbol;
                 }
                 s = s + (char) c;
                 if(c == '"') break;
             }
-            symbol = new Symbol("String", s);
+            symbol = new Symbol("String", s, this.lineNumber);
             return symbol;
         }
 
         // All the other characters that are not recognised
         else {
-            symbol = new Symbol("Error", "" + (char) c);
+            symbol = new Symbol("Error", "" + (char) c, this.lineNumber);
             return symbol;
         }
 
